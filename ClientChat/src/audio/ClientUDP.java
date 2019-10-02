@@ -32,7 +32,7 @@ public class ClientUDP {
 	public void sendAudio(String audio) {
 		try {
 //			String mensaje = "enviando audio";
-			File file = new File("no-tears-left-to-cry.mp3");
+			File file = new File("no-tears-left-to-cry.wav");
 			this.buffer = readFileToByteArray(file);
 			DatagramPacket pregunta = new DatagramPacket(this.buffer, this.buffer.length, this.address,
 					this.portServer);
