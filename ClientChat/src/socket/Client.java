@@ -19,6 +19,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import audio.ClientUDP;
+import audio.ServerUDP;
+
 /**
  *
  * @author Alexis Holguin
@@ -36,6 +39,21 @@ public class Client {
 	private P2PServer p2pSever;
 	private boolean flagExit = false;
 	protected boolean flagChat = false;
+	/**
+	 * @return the flagChat
+	 */
+	public boolean isFlagChat() {
+		return flagChat;
+	}
+
+	/**
+	 * @param flagChat the flagChat to set
+	 */
+	public void setFlagChat(boolean flagChat) {
+		this.flagChat = flagChat;
+	}
+
+	private ServerUDP serverUDP;
 
 	// constructor to put ip address and port
 	public Client(String address, int port) {
@@ -69,6 +87,8 @@ public class Client {
 			this.name = desdeElUsuario.readLine();
 			p2pSever = new P2PServer(5678, this.name, this);
 			p2pSever.start();
+			this.serverUDP = new ServerUDP(this);
+			this.serverUDP.start();
 			// envio de mensaje al server
 
 			JsonObject message = new JsonObject();
@@ -108,17 +128,33 @@ public class Client {
 				selectClient(Integer.parseInt(desdeElUsuario.readLine()));
 				break;
 			} else if (line.equals("3")) {
-				System.out.println("Se hara despues");
+				selectClient(Integer.parseInt(desdeElUsuario.readLine()));
 			} else if (line.equals("4")) {
 				this.flagExit = true;
 				break;
+			}else {
+				System.out.println("Opcion incorrecta");
 			}
-			if(!this.flagChat) {
-				ShowMenu();	
+			if (!this.flagChat) {
+				ShowMenu();
 			}
 		}
 		if (this.flagExit) {
 			disconnect();
+		}
+
+	}
+
+	public void selectClientAudio(int client) {
+		JsonArray clients;
+		try {
+			clients = getClientsJson();
+			JsonObject clientObj = clients.get(client - 1).getAsJsonObject();
+			ClientUDP clientUDP = new ClientUDP(clientObj.get("ip").getAsString());
+			clientUDP.sendAudio("as");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -184,7 +220,7 @@ public class Client {
 		try {
 			haciaElServidor.writeUTF(message.toString());
 			System.out.println(this.desdeElServidor.readUTF());
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -192,7 +228,7 @@ public class Client {
 	}
 
 	public static void main(String args[]) {
-		Client client = new Client("192.168.0.4", 5000);
+		Client client = new Client(args[0], 5000);
 		client.init();
 	}
 

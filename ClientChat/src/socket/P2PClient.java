@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class P2PClient extends Thread{
-	
+public class P2PClient extends Thread {
+
 	private String address;
 	private int port;
 	private DataOutputStream haciaElServidor = null;
@@ -20,7 +20,8 @@ public class P2PClient extends Thread{
 	private String name;
 	private Client client;
 	private P2PServer server;
-	public P2PClient(String address, int port,String name, Client client, P2PServer server) {
+
+	public P2PClient(String address, int port, String name, Client client, P2PServer server) {
 		try {
 			this.client = client;
 			this.address = address;
@@ -30,12 +31,12 @@ public class P2PClient extends Thread{
 			socket = new Socket(address, port);
 
 			System.out.println("Conectado al chat");
-			
+
 			// lo que viene desde el servidor
 			desdeElServidor = new DataInputStream(socket.getInputStream());
 			// sends output to the socket
 			haciaElServidor = new DataOutputStream(socket.getOutputStream());
-			
+
 			desdeElUsuario = new BufferedReader(new InputStreamReader(System.in));
 			haciaElServidor.writeUTF(name);
 		} catch (UnknownHostException u) {
@@ -44,17 +45,19 @@ public class P2PClient extends Thread{
 			System.out.println(i);
 		}
 	}
+
 	public void run() {
 		this.client.flagChat = true;
 		String line = "";
-		while(!line.equals("exit")) {
-			try {
-				line = desdeElUsuario.readLine();
+		try {
+			line = desdeElUsuario.readLine();
+			while (!line.equals("exit")) {
 				haciaElServidor.writeUTF(line);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				line = desdeElUsuario.readLine();
 			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		try {
 			disconnect();
@@ -66,10 +69,10 @@ public class P2PClient extends Thread{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void disconnect() throws IOException {
 		this.flagExit = true;
 		this.socket.close();
 	}
-	
+
 }
