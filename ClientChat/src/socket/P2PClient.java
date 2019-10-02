@@ -30,7 +30,7 @@ public class P2PClient extends Thread{
 			socket = new Socket(address, port);
 
 			System.out.println("Conectado al chat");
-
+			
 			// lo que viene desde el servidor
 			desdeElServidor = new DataInputStream(socket.getInputStream());
 			// sends output to the socket
@@ -45,9 +45,9 @@ public class P2PClient extends Thread{
 		}
 	}
 	public void run() {
+		this.client.flagChat = true;
 		String line = "";
 		while(!line.equals("exit")) {
-			System.out.print("\n tu: ");
 			try {
 				line = desdeElUsuario.readLine();
 				haciaElServidor.writeUTF(line);
@@ -59,6 +59,7 @@ public class P2PClient extends Thread{
 		try {
 			disconnect();
 			server.setFlagExit(true);
+			this.client.flagChat = false;
 			client.ControlMenu();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

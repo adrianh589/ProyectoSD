@@ -27,7 +27,21 @@ public class P2PServer extends Thread {
 	}
 
 	private P2PClient p2pclient;
-	private String nameClient;
+	/**
+	 * @return the p2pclient
+	 */
+	public P2PClient getP2pclient() {
+		return p2pclient;
+	}
+
+	/**
+	 * @param p2pclient the p2pclient to set
+	 */
+	public void setP2pclient(P2PClient p2pclient) {
+		this.p2pclient = p2pclient;
+	}
+
+	protected String nameClient;
 	private String myName;
 	private Client client;
 
@@ -36,6 +50,7 @@ public class P2PServer extends Thread {
 			this.server = new ServerSocket(port);
 			this.myName = myName;
 			this.client = client;
+			this.p2pclient = this.client.p2pClient;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,7 +66,11 @@ public class P2PServer extends Thread {
 
 			// outputs
 			this.desdeElCliente = new DataInputStream(socket.getInputStream());
-			this.p2pclient = new P2PClient(socket.getLocalAddress().getHostAddress(), 5678, this.myName, this.client, this);
+			if(this.p2pclient == null) {
+				this.p2pclient = new P2PClient(socket.getInetAddress().getHostAddress(), 5678, this.myName, this.client, this);
+				this.client.p2pClient = this.p2pclient;
+				this.p2pclient.start();
+			}
 			this.nameClient = this.desdeElCliente.readUTF();
 			while (!this.flagExit) {
 				System.out.println(this.nameClient + ": " + this.desdeElCliente.readUTF());

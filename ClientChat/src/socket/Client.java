@@ -32,9 +32,10 @@ public class Client {
 	private String name;
 	private String address;
 	private int port;
-	private P2PClient p2pClient;
+	protected P2PClient p2pClient;
 	private P2PServer p2pSever;
 	private boolean flagExit = false;
+	protected boolean flagChat = false;
 
 	// constructor to put ip address and port
 	public Client(String address, int port) {
@@ -96,14 +97,14 @@ public class Client {
 
 	public void ControlMenu() throws IOException {
 		ShowMenu();
-		String line = desdeElUsuario.readLine();
-		while (true) {
+		while (!this.flagChat) {
+			String line = desdeElUsuario.readLine();
 			if (line.equals("1")) {
 				listClients();
 			} else if (line.equals("2")) {
 				System.out.println("Selccione un cliente:");
 				listClients();
-				System.out.println("Ingrese el usuario al que se desea conectar: \n");
+				System.out.println("Ingrese el usuario al que se desea conectar:");
 				selectClient(Integer.parseInt(desdeElUsuario.readLine()));
 				break;
 			} else if (line.equals("3")) {
@@ -112,8 +113,9 @@ public class Client {
 				this.flagExit = true;
 				break;
 			}
-			ShowMenu();
-			line = desdeElUsuario.readLine();
+			if(!this.flagChat) {
+				ShowMenu();	
+			}
 		}
 		if (this.flagExit) {
 			disconnect();
@@ -125,6 +127,7 @@ public class Client {
 		JsonArray clients = getClientsJson();
 		JsonObject clientObj = clients.get(client - 1).getAsJsonObject();
 		p2pClient = new P2PClient(clientObj.get("ip").getAsString(), 5678, this.name, this, this.p2pSever);
+		this.p2pSever.setP2pclient(p2pClient);
 		p2pClient.start();
 	}
 
@@ -181,6 +184,7 @@ public class Client {
 		try {
 			haciaElServidor.writeUTF(message.toString());
 			System.out.println(this.desdeElServidor.readUTF());
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
