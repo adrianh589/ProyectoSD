@@ -32,7 +32,7 @@ public class P2PClient extends Thread{
 			haciaElServidor = new DataOutputStream(socket.getOutputStream());
 			
 			desdeElUsuario = new BufferedReader(new InputStreamReader(System.in));
-			haciaElServidor.writeUTF(this.name);
+			haciaElServidor.writeUTF(name);
 		} catch (UnknownHostException u) {
 			System.out.println(u);
 		} catch (IOException i) {

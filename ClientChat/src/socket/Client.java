@@ -102,6 +102,7 @@ public class Client {
 			} else if (line.equals("2")) {
 				System.out.println("Selccione un cliente:");
 				listClients();
+				System.out.println("Ingrese el usuario al que se desea conectar: \n");
 				selectClient(Integer.parseInt(desdeElUsuario.readLine()));
 			} else if (line.equals("3")) {
 				System.out.println("Se hara despues");
@@ -120,14 +121,6 @@ public class Client {
 	}
 
 	public void listClients() throws UnknownHostException, IOException {
-		this.socket = new Socket(this.address, this.port);
-
-		// lo que viene desde el servidor
-		desdeElServidor = new DataInputStream(socket.getInputStream());
-
-		// sends output to the socket
-		haciaElServidor = new DataOutputStream(socket.getOutputStream());
-
 		System.out.println("Clientes Conectados:");
 		JsonArray obj = getClientsJson();
 		for (int i = 0; i < obj.size(); i++) {
@@ -136,6 +129,15 @@ public class Client {
 	}
 
 	public JsonArray getClientsJson() throws IOException {
+		this.socket = new Socket(this.address, this.port);
+
+		// lo que viene desde el servidor
+		desdeElServidor = new DataInputStream(socket.getInputStream());
+
+		// sends output to the socket
+		haciaElServidor = new DataOutputStream(socket.getOutputStream());
+		
+		
 		JsonObject message = new JsonObject();
 		message.addProperty("name", this.name);
 		message.addProperty("connection", true);
@@ -179,7 +181,7 @@ public class Client {
 	}
 
 	public static void main(String args[]) {
-		Client client = new Client("127.0.0.1", 5000);
+		Client client = new Client("10.8.4.46", 5000);
 		client.init();
 	}
 
