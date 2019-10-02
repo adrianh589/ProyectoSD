@@ -24,7 +24,7 @@ public class ClientThread extends Thread {
 		this.socket = socket;
 		this.dataInput = in;
 		this.dataOutput = out;
-		this.setIp(socket.getLocalAddress().getHostAddress());
+		this.setIp(socket.getInetAddress().getHostAddress());
 	}
 
 	public void run() {

@@ -34,6 +34,7 @@ public class Client {
 	private int port;
 	private P2PClient p2pClient;
 	private P2PServer p2pSever;
+	private boolean flagExit = false;
 
 	// constructor to put ip address and port
 	public Client(String address, int port) {
@@ -65,7 +66,7 @@ public class Client {
 		System.out.println("Bienvenido, ingrese su nombre de Usuario");
 		try {
 			this.name = desdeElUsuario.readLine();
-			p2pSever = new P2PServer(5678, this.name);
+			p2pSever = new P2PServer(5678, this.name, this);
 			p2pSever.start();
 			// envio de mensaje al server
 
@@ -96,7 +97,7 @@ public class Client {
 	public void ControlMenu() throws IOException {
 		ShowMenu();
 		String line = desdeElUsuario.readLine();
-		while (!line.equals("4")) {
+		while (true) {
 			if (line.equals("1")) {
 				listClients();
 			} else if (line.equals("2")) {
@@ -104,19 +105,26 @@ public class Client {
 				listClients();
 				System.out.println("Ingrese el usuario al que se desea conectar: \n");
 				selectClient(Integer.parseInt(desdeElUsuario.readLine()));
+				break;
 			} else if (line.equals("3")) {
 				System.out.println("Se hara despues");
+			} else if (line.equals("4")) {
+				this.flagExit = true;
+				break;
 			}
 			ShowMenu();
 			line = desdeElUsuario.readLine();
 		}
-		disconnect();
+		if (this.flagExit) {
+			disconnect();
+		}
+
 	}
 
 	public void selectClient(int client) throws IOException {
 		JsonArray clients = getClientsJson();
 		JsonObject clientObj = clients.get(client - 1).getAsJsonObject();
-		p2pClient = new P2PClient(clientObj.get("ip").getAsString(), 5678,this.name);
+		p2pClient = new P2PClient(clientObj.get("ip").getAsString(), 5678, this.name, this, this.p2pSever);
 		p2pClient.start();
 	}
 
@@ -136,8 +144,7 @@ public class Client {
 
 		// sends output to the socket
 		haciaElServidor = new DataOutputStream(socket.getOutputStream());
-		
-		
+
 		JsonObject message = new JsonObject();
 		message.addProperty("name", this.name);
 		message.addProperty("connection", true);
@@ -181,7 +188,7 @@ public class Client {
 	}
 
 	public static void main(String args[]) {
-		Client client = new Client("10.8.4.46", 5000);
+		Client client = new Client("192.168.0.4", 5000);
 		client.init();
 	}
 

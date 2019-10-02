@@ -18,10 +18,15 @@ public class P2PClient extends Thread{
 	private boolean flagExit = false;
 	private BufferedReader desdeElUsuario = null;
 	private String name;
-	public P2PClient(String address, int port,String name) {
+	private Client client;
+	private P2PServer server;
+	public P2PClient(String address, int port,String name, Client client, P2PServer server) {
 		try {
+			this.client = client;
 			this.address = address;
 			this.port = port;
+			this.name = name;
+			this.server = server;
 			socket = new Socket(address, port);
 
 			System.out.println("Conectado al chat");
@@ -40,14 +45,24 @@ public class P2PClient extends Thread{
 		}
 	}
 	public void run() {
-		while(!this.flagExit) {
-			System.out.print("tu: ");
+		String line = "";
+		while(!line.equals("exit")) {
+			System.out.print("\n tu: ");
 			try {
-				haciaElServidor.writeUTF(desdeElUsuario.readLine());
+				line = desdeElUsuario.readLine();
+				haciaElServidor.writeUTF(line);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		try {
+			disconnect();
+			server.setFlagExit(true);
+			client.ControlMenu();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
