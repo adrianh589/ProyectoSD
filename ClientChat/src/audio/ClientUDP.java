@@ -12,7 +12,7 @@ import java.net.UnknownHostException;
 public class ClientUDP {
 
 	private DatagramSocket socket;
-	private byte[] buffer = new byte[1024];
+	private byte[] buffer = new byte[6022386];
 	private InetAddress address;
 	private int portServer = 5432;
 
@@ -32,7 +32,7 @@ public class ClientUDP {
 	public void sendAudio(String audio) {
 		try {
 //			String mensaje = "enviando audio";
-			File file = new File("no-tears-left-to-cry.wav");
+			File file = new File("C:\\Users\\jhons\\eclipse-workspace\\ClientChat\\src\\audio\\no-tears-left-to-cry.mp3");
 			this.buffer = readFileToByteArray(file);
 			DatagramPacket pregunta = new DatagramPacket(this.buffer, this.buffer.length, this.address,
 					this.portServer);

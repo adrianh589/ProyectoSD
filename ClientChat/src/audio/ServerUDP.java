@@ -18,7 +18,7 @@ public class ServerUDP extends Thread {
 
 	private int port;
 	private DatagramSocket socket;
-	private byte[] buffer = new byte[1024];
+	private byte[] buffer = new byte[6022386];
 	private Client client;
 
 	public ServerUDP(Client client) throws SocketException {

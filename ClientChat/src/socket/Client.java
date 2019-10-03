@@ -130,7 +130,8 @@ public class Client {
 			} else if (line.equals("3")) {
 				listClients();
 				System.out.println("Ingrese el usuario al que se desea conectar:");
-				selectClient(Integer.parseInt(desdeElUsuario.readLine()));
+				selectClientAudio(Integer.parseInt(desdeElUsuario.readLine()));
+				break;
 			} else if (line.equals("4")) {
 				this.flagExit = true;
 				break;
